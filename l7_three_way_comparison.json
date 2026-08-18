@@ -1,0 +1,26 @@
+{
+  "L6": {
+    "level": "L6",
+    "total_reward": 11345,
+    "mean_reward": 61.82,
+    "subjectivity_index": 0.18279569923855765
+  },
+  "L7_uncalibrated": {
+    "calibrated": false,
+    "total_reward": 8515,
+    "mean_reward": 44.56,
+    "subjectivity_index": 0.10041841051233358,
+    "final_confidence": 0.5824740574857804,
+    "final_learning_rate": 0.13966745921874996,
+    "lr_adjust_count": 0
+  },
+  "L7_calibrated": {
+    "calibrated": true,
+    "total_reward": 9415,
+    "mean_reward": 46.32,
+    "subjectivity_index": 0.09108527175819514,
+    "final_confidence": 0.5856626274107389,
+    "final_learning_rate": 0.003813131668717092,
+    "lr_adjust_count": 19336
+  }
+}

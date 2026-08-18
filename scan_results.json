@@ -1,0 +1,52 @@
+{
+  "D1": {
+    "planning_depth": 1,
+    "total_reward": 8254,
+    "mean_reward": 55.14,
+    "subjectivity_index": 0.007023705440288186,
+    "self_other_discrimination": 0.9997576932396414,
+    "historical_dependence": 0.940385528025844,
+    "adaptation_gain": -0.1478006874353063,
+    "final_prediction_error": 0.6168043020739511
+  },
+  "D2": {
+    "planning_depth": 2,
+    "total_reward": 8254,
+    "mean_reward": 55.14,
+    "subjectivity_index": 0.007023705440288186,
+    "self_other_discrimination": 0.9997576932396414,
+    "historical_dependence": 0.940385528025844,
+    "adaptation_gain": -0.1478006874353063,
+    "final_prediction_error": 0.6168043020739511
+  },
+  "D3": {
+    "planning_depth": 3,
+    "total_reward": 8254,
+    "mean_reward": 55.14,
+    "subjectivity_index": 0.007023705440288186,
+    "self_other_discrimination": 0.9997576932396414,
+    "historical_dependence": 0.940385528025844,
+    "adaptation_gain": -0.1478006874353063,
+    "final_prediction_error": 0.6168043020739511
+  },
+  "D4": {
+    "planning_depth": 4,
+    "total_reward": 8254,
+    "mean_reward": 55.14,
+    "subjectivity_index": 0.007023705440288186,
+    "self_other_discrimination": 0.9997576932396414,
+    "historical_dependence": 0.940385528025844,
+    "adaptation_gain": -0.1478006874353063,
+    "final_prediction_error": 0.6168043020739511
+  },
+  "D5": {
+    "planning_depth": 5,
+    "total_reward": 8254,
+    "mean_reward": 55.14,
+    "subjectivity_index": 0.007023705440288186,
+    "self_other_discrimination": 0.9997576932396414,
+    "historical_dependence": 0.940385528025844,
+    "adaptation_gain": -0.1478006874353063,
+    "final_prediction_error": 0.6168043020739511
+  }
+}

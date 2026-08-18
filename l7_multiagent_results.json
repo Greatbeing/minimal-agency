@@ -1,0 +1,21 @@
+{
+  "L7": {
+    "level": 7,
+    "level_name": "L7",
+    "total_reward": 1568.2000000000007,
+    "mean_reward": 8.042200000000003,
+    "subjectivity_index": 0.0,
+    "final_confidence": 0.594985241649954,
+    "final_learning_rate": 0.11974738784767572,
+    "final_adaptability": 0.629,
+    "meta_updates": 20000
+  },
+  "multiagent": {
+    "n_agents": 3,
+    "total_reward": 2149.613333333334,
+    "mean_reward": 14.099200000000002,
+    "final_intersubjectivity": 0.5279960535315369,
+    "final_prediction_similarity": 0.17123658375729786,
+    "final_meta_similarity": 0.7318797620824297
+  }
+}

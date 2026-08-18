@@ -1,0 +1,20 @@
+{
+  "L6": {
+    "agent_type": "L6",
+    "total_reward": 4644,
+    "mean_reward": 32.96666666666667,
+    "subjectivity_index": 0.310850440488988,
+    "final_confidence": "N/A",
+    "final_learning_rate": "N/A",
+    "adaptation_slope": -6.110408765276191e-05
+  },
+  "L7_calibrated": {
+    "agent_type": "L7_calibrated",
+    "total_reward": 6942,
+    "mean_reward": 46.166666666666664,
+    "subjectivity_index": 0.17005076205326086,
+    "final_confidence": 0.5273022870957202,
+    "final_learning_rate": 0.0028108954622695507,
+    "adaptation_slope": -0.00013680083370349002
+  }
+}
