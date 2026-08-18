@@ -36,6 +36,41 @@
 
 ---
 
+## BreakShell Agent 原型
+
+### 核心差异
+
+| | 普通 Agent + LSTM 记忆 | BreakShell 自我模型 |
+|--|----------------------|-------------------|
+| 编码什么 | 完整的 (obs, action, reward) 序列 | 仅 (action, reward) → **能力推断** |
+| 建模对象 | 环境动力学 | **自身能力边界** |
+| 回答的问题 | "上次这样做结果如何？" | **"我现在有能力做这个吗？"** |
+
+### 实验结果
+
+```
+普通 Agent（有记忆）: -49.50
+BreakShell（有自我模型）: +6.78
+差异: +56.27（BreakShell 提升 113%）
+```
+
+### 关键洞察
+
+1. **自我模型 ≠ 记忆**
+   - 普通 Agent + LSTM 记忆 = 记住发生了什么
+   - BreakShell 自我模型 = 推断自己能做什么
+
+2. **差异显现的条件**
+   - 观察中无能力信息 ✓ → 自我模型有价值
+   - 两者都有记忆 ✓ → 差异消失（记忆+推断 ≈ 纯记忆）
+   - 选错代价大 ✓ → 自我模型价值高
+
+3. **BreakShell 的真正价值**
+   - 不是"有记忆"（大部分 Agent 都有）
+   - 是"知道自己能力边界"（不是所有 Agent 都有）
+
+---
+
 ## 项目结构
 
 ```
@@ -50,13 +85,10 @@
 ├── paper.tex                 # 学术论文 LaTeX
 │
 ├── micl/breakshell/          # BreakShell Agent 原型（破壳）
-│   ├── agent.py              # 主 Agent（自我模型硬连线）
-│   ├── self_model.py         # 自我模型模块
-│   ├── planner.py            # 反事实规划器
-│   ├── environment.py        # 环境（GridWorld/非平稳/迷宫）
-│   ├── si_measurement.py     # SI 实时测量
-│   ├── functional_e2e.py     # 功能耦合训练（多版本迭代）
-│   ├── breakout_benchmark.py # BreakOut 基准测试
+│   ├── breakshell.py         # 核心实现（整合版）
+│   ├── sec_bench_standard.py # SEC-Bench 标准化评测
+│   ├── demo.py               # 交互式演示
+│   ├── demo_comparison.py    # 对比演示
 │   └── EXPERIMENT_REPORT.md  # 实验报告
 │
 ├── figures/                  # 核心图表
@@ -86,18 +118,18 @@ pip install -r requirements.txt
 python simulation.py
 ```
 
+### 运行 BreakShell 对比演示
+
+```bash
+cd micl/breakshell
+python breakshell.py
+```
+
 ### 运行 SEC 评测（需要 Profy API Key）
 
 ```bash
 export PROFY_API_KEY="sk-pro-..."
-python micl/breakshell/sec_bench.py
-```
-
-### 运行消融实验
-
-```bash
-cd micl/breakshell
-python ablation_experiment.py
+python micl/breakshell/sec_bench_standard.py --model gpt-5.6-sol
 ```
 
 ### 运行测试
