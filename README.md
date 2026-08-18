@@ -1,11 +1,10 @@
 # 最小智能闭环 (Minimal Intelligent Closed Loop)
 
-> **从"无我"到"最小智能闭环" — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型**
+> **从"无我"到"有我" — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型**
 
 [![CI](https://github.com/Greatbeing/minimal-agency/actions/workflows/ci.yml/badge.svg)](https://github.com/Greatbeing/minimal-agency/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
-[![GitHub stars](https://img.shields.io/github/stars/Greatbeing/minimal-agency?style=social)](https://github.com/Greatbeing/minimal-agency)
 
 ---
 
@@ -50,14 +49,14 @@
 ├── generalization_test.py    # 复杂迷宫泛化
 ├── paper.tex                 # 学术论文 LaTeX
 │
-├── youwo/breakshell/         # BreakShell Agent 原型（破壳）
+├── micl/breakshell/          # BreakShell Agent 原型（破壳）
 │   ├── agent.py              # 主 Agent（自我模型硬连线）
 │   ├── self_model.py         # 自我模型模块
 │   ├── planner.py            # 反事实规划器
 │   ├── environment.py        # 环境（GridWorld/非平稳/迷宫）
 │   ├── si_measurement.py     # SI 实时测量
-│   ├── functional_coupling.py    # 功能耦合训练协议
-│   ├── sec_bench.py          # SEC-Bench 标准化评测
+│   ├── functional_e2e.py     # 功能耦合训练（多版本迭代）
+│   ├── breakout_benchmark.py # BreakOut 基准测试
 │   └── EXPERIMENT_REPORT.md  # 实验报告
 │
 ├── figures/                  # 核心图表
@@ -91,13 +90,13 @@ python simulation.py
 
 ```bash
 export PROFY_API_KEY="sk-pro-..."
-python youwo/breakshell/sec_bench.py
+python micl/breakshell/sec_bench.py
 ```
 
 ### 运行消融实验
 
 ```bash
-cd youwo/breakshell
+cd micl/breakshell
 python ablation_experiment.py
 ```
 
@@ -143,8 +142,9 @@ L7 校准 vs L6: +40% 奖励
 ### BreakShell Agent 消融实验
 
 ```
-消融比率: 1.19x (趋势正确，未达 1.5x 阈值)
+消融比率: 1.0x（Full = Ablated）
 → 核心发现: 形式耦合 ≠ 功能耦合
+→ 根因: 手写 numpy 无法训练编码器产生有用的 z
 ```
 
 ---
@@ -178,7 +178,7 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 
 ---
 
-## 当前状态与下一步
+## 当前挑战与下一步
 
 ### ✅ 已完成
 - [x] 形式化框架（6 条必要条件 + 5 条 SEC 充分条件）
@@ -188,15 +188,16 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 - [x] 消融实验（发现形式耦合≠功能耦合）
 - [x] SEC-Bench 初版
 
-### 🔄 进行中
-- [ ] 功能耦合训练协议（消融比率从 1.19x → 1.5x+）
-- [ ] 自我知识必要环境（迫使 Agent 必须用自我模型）
-- [ ] 5 条可证伪预测的数学化
+### 🔴 核心挑战：功能耦合
+- [ ] 消融比率 1.0x → 目标 1.5x+
+- [ ] 根因：手写 numpy 无法训练编码器产生有用的 z
+- [ ] 策略网络正确学会忽略噪声 z
 
 ### 📋 待做
+- [ ] 迁移到 PyTorch（解决梯度传播问题）
+- [ ] 设计更简单的离散环境（降低学习难度）
+- [ ] 5 条可证伪预测的数学化
 - [ ] SEC-Bench 2.0（社区可复现）
-- [ ] 公理化体系升级
-- [ ] 多主体 L7 数学化
 - [ ] 投稿 NeurIPS/ICML/AAAI
 
 ---
@@ -214,7 +215,7 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 ## 引用
 
 ```bibtex
-@misc{selfpresent2026,
+@misc{minimalagency2026,
   title={最小智能闭环 (Minimal Intelligent Closed Loop): 主体性涌现的形式化、计算实验与 Agent 原型},
   author={Greatbeing},
   year={2026},
