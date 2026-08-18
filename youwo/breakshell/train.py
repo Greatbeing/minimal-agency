@@ -1,7 +1,7 @@
 """
-Pocker Agent — 训练循环
+BreakShell Agent — 训练循环
 ====================
-训练 Pocker Agent 并追踪 SI 涌现
+训练 BreakShell Agent 并追踪 SI 涌现
 """
 
 import numpy as np
@@ -12,15 +12,15 @@ import os
 # 添加父目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent import PockerAgent
+from agent import BreakShellAgent
 from environment import GridWorld, NonStationaryGridWorld, ProceduralLabyrinth
 
 
-def train_pocker(env_name: str = "gridworld", num_episodes: int = 200,
+def train_breakshell(env_name: str = "gridworld", num_episodes: int = 200,
                    max_steps_per_episode: int = 100, seed: int = 42,
                    verbose: bool = True) -> Dict:
     """
-    训练 Pocker Agent
+    训练 BreakShell Agent
     
     Args:
         env_name: 环境名称 ("gridworld", "nonstationary", "labyrinth")
@@ -46,7 +46,7 @@ def train_pocker(env_name: str = "gridworld", num_episodes: int = 200,
     action_dim = 4  # 上/下/左/右
     
     # 创建 Agent
-    agent = PockerAgent(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
+    agent = BreakShellAgent(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
                     plan_depth=5, seed=seed)
     
     # 训练记录
@@ -114,25 +114,25 @@ def train_pocker(env_name: str = "gridworld", num_episodes: int = 200,
 
 def compare_with_baseline() -> Dict:
     """
-    对比 Pocker Agent 与 baseline (无自我模型的 Agent)
+    对比 BreakShell Agent 与 baseline (无自我模型的 Agent)
     """
     print("=" * 60)
-    print("Pocker Agent 对比实验")
+    print("BreakShell Agent 对比实验")
     print("=" * 60)
     
     results = {}
     
-    # 1. Pocker Agent (完整)
-    print("\n--- Pocker Agent (完整) ---")
-    results['l6'] = train_pocker("gridworld", num_episodes=100, verbose=True)
+    # 1. BreakShell Agent (完整)
+    print("\n--- BreakShell Agent (完整) ---")
+    results['l6'] = train_breakshell("gridworld", num_episodes=100, verbose=True)
     
     # 2. 非平稳环境
-    print("\n--- Pocker Agent (非平稳环境) ---")
-    results['l6_nonstationary'] = train_pocker("nonstationary", num_episodes=100, verbose=True)
+    print("\n--- BreakShell Agent (非平稳环境) ---")
+    results['l6_nonstationary'] = train_breakshell("nonstationary", num_episodes=100, verbose=True)
     
     # 3. 复杂迷宫
-    print("\n--- Pocker Agent (复杂迷宫) ---")
-    results['l6_labyrinth'] = train_pocker("labyrinth", num_episodes=100, verbose=True)
+    print("\n--- BreakShell Agent (复杂迷宫) ---")
+    results['l6_labyrinth'] = train_breakshell("labyrinth", num_episodes=100, verbose=True)
     
     return results
 

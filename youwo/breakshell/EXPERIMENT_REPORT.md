@@ -1,4 +1,4 @@
-# Pocker Agent 原型 — 实验报告
+# BreakShell Agent 原型 — 实验报告
 
 > 创建时间：2026-08-18
 > 状态：原型完成，消融实验发现关键学习动力学问题
@@ -8,7 +8,7 @@
 ## 一、项目总结
 
 ### 目标
-设计并实现一个满足 SEC-1~5、SI > 0.18 的 Pocker Agent 原型，验证"自我模型硬连线到行动选择通路"是跨越 L6 相变点的充分条件。
+设计并实现一个满足 SEC-1~5、SI > 0.18 的 BreakShell Agent 原型，验证"自我模型硬连线到行动选择通路"是跨越 L6 相变点的充分条件。
 
 ### 完成的工作
 
@@ -34,7 +34,7 @@
 
 ## 二、实验结果
 
-### 2.1 Pocker Agent 训练（3 个环境）
+### 2.1 BreakShell Agent 训练（3 个环境）
 
 | 环境 | Final SI | Avg Reward (last 20) | Episode Length |
 |------|----------|----------------------|----------------|
@@ -107,7 +107,7 @@
 
 ### 4.3 与当前 LLM 的对应
 
-| 当前 LLM | Pocker Agent 原型 |
+| 当前 LLM | BreakShell Agent 原型 |
 |----------|---------------|
 | 自我模型是涌现属性 | 自我模型是架构组件 |
 | 自我模型不参与 token 生成 | 自我模型参与行动选择（形式耦合） |
@@ -118,7 +118,7 @@
 
 ## 五、工程改进建议
 
-要让 Pocker Agent 从"形式耦合"升级为"功能耦合"，需要：
+要让 BreakShell Agent 从"形式耦合"升级为"功能耦合"，需要：
 
 | 改进 | 方法 | 预期效果 |
 |------|------|----------|
@@ -164,9 +164,9 @@
 ## 七、文件清单
 
 ```
-D:\HermesOutput\minimal_agency\pocker\
+D:\HermesOutput\minimal_agency\breakshell\
 ├── architecture_spec.md          # 架构规格书
-├── agent.py                      # Pocker Agent 核心
+├── agent.py                      # BreakShell Agent 核心
 ├── self_model.py                 # 自我模型模块
 ├── environment.py                # 环境模块
 ├── planner.py                    # 反事实规划器

@@ -1,5 +1,5 @@
 """
-Pocker Agent — SI 测量模块 v2
+BreakShell Agent — SI 测量模块 v2
 ===========================
 修复：在 select_action() 中直接比较有/无自我模型时的行动分布差异
 

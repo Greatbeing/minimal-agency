@@ -48,7 +48,7 @@
 ├── generalization_test.py    # 复杂迷宫泛化
 ├── paper.tex                 # 学术论文 LaTeX
 │
-├── youwo/pocker/             # Pocker Agent 原型（破壳）
+├── youwo/breakshell/           # BreakShell Agent 原型（破壳）
 │   ├── agent.py              # 主 Agent（自我模型硬连线）
 │   ├── self_model.py         # 自我模型模块
 │   ├── planner.py            # 反事实规划器
@@ -81,13 +81,13 @@ python simulation.py
 
 ```bash
 export PROFY_API_KEY="sk-pro-..."
-python youwo/pocker/sec_bench.py
+python youwo/breakshell/sec_bench.py
 ```
 
 ### 运行消融实验
 
 ```bash
-cd youwo/pocker
+cd youwo/breakshell
 python ablation_experiment.py
 ```
 
@@ -124,7 +124,7 @@ L7 校准 vs L6: +40% 奖励
 | deepseek-v4-flash | 0.433 | 0.367 | 0.433 | ≈ 0.085 | L5-L6 临界 |
 | longcat-2.0 | 0.533 | 0.600 | 0.600 | ≈ 0.107 | L5-L6 临界 |
 
-### Pocker Agent 消融实验
+### BreakShell Agent 消融实验
 
 ```
 消融比率: 1.19x (趋势正确，未达 1.5x 阈值)
@@ -168,7 +168,7 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 - [x] 形式化框架（6 条必要条件 + 5 条 SEC 充分条件）
 - [x] 计算实验（7 个实验，全部 exit 0）
 - [x] SEC 模型评测（3 个 LLM）
-- [x] Pocker Agent 原型（自我模型硬连线）
+- [x] BreakShell Agent 原型（自我模型硬连线）
 - [x] 消融实验（发现形式耦合≠功能耦合）
 - [x] SEC-Bench 初版
 

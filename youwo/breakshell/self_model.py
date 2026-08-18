@@ -1,5 +1,5 @@
 """
-Pocker Agent — 自我模型模块 (Self Model)
+BreakShell Agent — 自我模型模块 (Self Model)
 =====================================
 核心创新：显式的、可更新的、硬连线到策略网络的自我模型。
 

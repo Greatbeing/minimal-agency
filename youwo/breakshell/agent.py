@@ -1,5 +1,5 @@
 """
-Pocker Agent — 主 Agent 模块
+BreakShell Agent — 主 Agent 模块
 ========================
 集成所有组件：自我模型 + 世界模型 + 反事实规划器 + SI 测量
 """
@@ -12,9 +12,9 @@ from planner import CounterfactualPlanner, WorldModel
 from si_measurement import SIMeasurement
 
 
-class PockerAgent:
+class BreakShellAgent:
     """
-    Pocker Agent：具有主体性的智能体
+    BreakShell Agent：具有主体性的智能体
     
     核心特征：
     1. 自我模型是显式架构组件（非涌现属性）

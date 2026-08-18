@@ -1,5 +1,5 @@
 """
-Pocker Agent — 反事实规划器 (Counterfactual Planner)
+BreakShell Agent — 反事实规划器 (Counterfactual Planner)
 ================================================
 核心创新：规划时使用自我模型 — "基于我的能力，做这个动作的成功率是多少"
 """

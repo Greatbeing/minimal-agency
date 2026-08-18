@@ -1,5 +1,5 @@
 """
-Pocker Agent — SEC-Bench 标准化评测
+BreakShell Agent — SEC-Bench 标准化评测
 =====================================
 核心改进：
 1. 重新设计 SI 测量：自我模型贡献占 80% 权重
@@ -14,7 +14,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent import PockerAgent
+from agent import BreakShellAgent
 
 
 class SelfKnowledgeEnvironment:
@@ -160,7 +160,7 @@ def run_sec_bench(num_episodes: int = 100, seed: int = 42) -> Dict:
     SEC-Bench 标准化评测
     
     测试：
-    1. 完整 Pocker Agent（有自我模型）
+    1. 完整 BreakShell Agent（有自我模型）
     2. 消融版本（无自我模型）
     3. 随机策略（基线）
     
@@ -177,7 +177,7 @@ def run_sec_bench(num_episodes: int = 100, seed: int = 42) -> Dict:
     action_dim = env.get_action_dim()
     
     # 创建 Agent
-    agent = PockerAgent(obs_dim, action_dim, hidden_dim=64, repr_dim=32,
+    agent = BreakShellAgent(obs_dim, action_dim, hidden_dim=64, repr_dim=32,
                         plan_depth=3, seed=seed)
     
     # 替换 SI 测量

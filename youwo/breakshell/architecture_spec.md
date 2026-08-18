@@ -1,4 +1,4 @@
-# Pocker Agent 原型 — 架构规格书
+# BreakShell Agent 原型 — 架构规格书
 
 > **目标**：实现一个满足 SEC-1~5、SI > 0.18 的 L6 智能体，验证"自我模型硬连线到行动选择通路"是跨越 L6 相变点的充分条件。
 
@@ -20,7 +20,7 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                         Pocker Agent Architecture                       │
+│                         BreakShell Agent Architecture                       │
 │                                                                      │
 │  ┌──────────┐    ┌──────────────────────────────────────────────┐   │
 │  │Environment│───▶│            Perception Encoder                │   │
@@ -141,9 +141,9 @@
 ## 6. 文件结构
 
 ```
-D:\HermesOutput\minimal_agency\pocker\
+D:\HermesOutput\minimal_agency\breakshell\
 ├── architecture_spec.md          # 本文件
-├── agent.py                      # Pocker Agent 核心实现
+├── agent.py                      # BreakShell Agent 核心实现
 ├── environment.py                # 环境（GridWorld + 非平稳变体）
 ├── self_model.py                 # 自我模型模块
 ├── planner.py                    # 反事实规划器

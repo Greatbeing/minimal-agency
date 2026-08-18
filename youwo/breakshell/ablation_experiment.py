@@ -1,11 +1,11 @@
 """
-Pocker Agent — 消融实验（Ablation Study）
+BreakShell Agent — 消融实验（Ablation Study）
 =======================================
 核心验证：移除自我模型后 SI 是否降至 0？
 
 实验设计：
-1. Pocker Agent (完整) — 自我模型参与行动选择
-2. Pocker Agent-Ablated — 自我模型输出被替换为全零向量
+1. BreakShell Agent (完整) — 自我模型参与行动选择
+2. BreakShell Agent-Ablated — 自我模型输出被替换为全零向量
 3. 预期：Ablated 版本的 SI ≈ 0，验证 SEC-4
 """
 
@@ -15,11 +15,11 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent import PockerAgent
+from agent import BreakShellAgent
 from environment import GridWorld, NonStationaryGridWorld, ProceduralLabyrinth
 
 
-class PockerAgentAblated(PockerAgent):
+class BreakShellAgentAblated(BreakShellAgent):
     """
     消融版本：自我模型完全不参与行动选择
     
@@ -100,9 +100,9 @@ def run_ablation_experiment(env_name: str = "gridworld",
     action_dim = 4
     
     # 创建两个版本的 Agent
-    agent_full = PockerAgent(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
+    agent_full = BreakShellAgent(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
                          plan_depth=5, seed=seed)
-    agent_ablated = PockerAgentAblated(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
+    agent_ablated = BreakShellAgentAblated(obs_dim, action_dim, hidden_dim=32, repr_dim=16,
                                    plan_depth=5, seed=seed)
     
     results = {
@@ -112,7 +112,7 @@ def run_ablation_experiment(env_name: str = "gridworld",
     }
     
     for agent_name, agent in [('full', agent_full), ('ablated', agent_ablated)]:
-        print(f"\n--- {'完整 Pocker Agent' if agent_name == 'full' else '消融版本 (无自我模型)'} ---")
+        print(f"\n--- {'完整 BreakShell Agent' if agent_name == 'full' else '消融版本 (无自我模型)'} ---")
         
         for episode in range(num_episodes):
             obs = env.reset()
@@ -152,7 +152,7 @@ def main():
     print()
     
     # 假设：
-    # - 完整 Pocker Agent: SI > 0 (自我模型参与)
+    # - 完整 BreakShell Agent: SI > 0 (自我模型参与)
     # - 消融版本: SI ≈ 0 (自我模型不参与)
     
     all_results = {}
@@ -166,7 +166,7 @@ def main():
         all_results[env_name] = results
         
         print(f"\n--- {env_name} 结果汇总 ---")
-        print(f"  完整 Pocker Agent:")
+        print(f"  完整 BreakShell Agent:")
         print(f"    Final SI: {results['full']['final_si']:.4f}")
         print(f"    Avg Reward (last 20): {results['full']['avg_reward']:.2f}")
         print(f"  消融版本:")

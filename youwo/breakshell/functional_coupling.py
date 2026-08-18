@@ -1,5 +1,5 @@
 """
-Pocker Agent — 功能耦合训练协议
+BreakShell Agent — 功能耦合训练协议
 =====================================
 解决消融实验发现的核心问题：形式耦合 ≠ 功能耦合
 
@@ -17,7 +17,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent import PockerAgent
+from agent import BreakShellAgent
 from environment import GridWorld, NonStationaryGridWorld, ProceduralLabyrinth
 
 
@@ -49,7 +49,7 @@ class FunctionalCouplingTrainer:
         obs_dim = self.env.get_obs_dim()
         action_dim = 4
         
-        self.agent = PockerAgent(obs_dim, action_dim, hidden_dim=64, repr_dim=32,
+        self.agent = BreakShellAgent(obs_dim, action_dim, hidden_dim=64, repr_dim=32,
                                  plan_depth=5, seed=seed)
     
     def train_phase1_world_model(self, num_episodes: int = 50):
@@ -240,7 +240,7 @@ class FunctionalCouplingTrainer:
     def run_full_training(self) -> Dict:
         """运行完整训练流程"""
         print("=" * 60)
-        print("Pocker Agent — 功能耦合训练")
+        print("BreakShell Agent — 功能耦合训练")
         print("=" * 60)
         
         # Phase 1-3: 训练

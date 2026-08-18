@@ -1,5 +1,5 @@
 """
-Pocker Agent — 环境模块
+BreakShell Agent — 环境模块
 ====================
 包含：
 1. GridWorld 静态环境
