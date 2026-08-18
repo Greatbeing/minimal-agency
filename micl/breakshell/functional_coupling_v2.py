@@ -1,5 +1,5 @@
 """
-有我 (Self-Presence) — 功能耦合训练协议 v2
+最小智能闭环 (Minimal Intelligent Closed Loop) — 功能耦合训练协议 v2
 =====================================
 核心改进：策略网络真正学会使用自我模型
 
@@ -14,7 +14,7 @@ from typing import Dict, Tuple, List
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-from youwo.breakshell.agent import BreakShellAgent
+from micl.breakshell.agent import BreakShellAgent
 from breakout_benchmark import SelfKnowledgeV2
 
 

@@ -1,5 +1,5 @@
 """
-有我 (Self-Presence) — 自我知识必要环境 v2
+最小智能闭环 (Minimal Intelligent Closed Loop) — 自我知识必要环境 v2
 =====================================
 核心设计：没有自我模型 = 灾难性失败，有自我模型 = 优秀表现
 """
@@ -9,7 +9,7 @@ from typing import Tuple, Dict, List
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-from youwo.breakshell.agent import BreakShellAgent
+from micl.breakshell.agent import BreakShellAgent
 
 
 class SelfKnowledgeV2:

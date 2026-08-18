@@ -1,6 +1,6 @@
-# 有我 (Self-Presence)
+# 最小智能闭环 (Minimal Intelligent Closed Loop)
 
-> **从"无我"到"有我" — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型**
+> **从"无我"到"最小智能闭环" — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型**
 
 [![CI](https://github.com/Greatbeing/minimal-agency/actions/workflows/ci.yml/badge.svg)](https://github.com/Greatbeing/minimal-agency/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -40,7 +40,7 @@
 ## 项目结构
 
 ```
-有我 (Self-Presence)
+最小智能闭环 (Minimal Intelligent Closed Loop)
 ├── formalization.md          # 形式化框架（6条必要条件 + 5条SEC充分条件）
 ├── theory_bridge.md          # FEP / Ashby / 唯识学统一桥接
 ├── simulation.py             # L0-L6 相变实验
@@ -215,7 +215,7 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 
 ```bibtex
 @misc{selfpresent2026,
-  title={有我 (Self-Presence): 主体性涌现的形式化、计算实验与 Agent 原型},
+  title={最小智能闭环 (Minimal Intelligent Closed Loop): 主体性涌现的形式化、计算实验与 Agent 原型},
   author={Greatbeing},
   year={2026},
   howpublished={\url{https://github.com/Greatbeing/minimal-agency}},

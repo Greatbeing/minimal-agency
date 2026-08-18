@@ -1,5 +1,5 @@
 """
-有我 (Self-Presence) — 最终验证：训练后消融比率
+最小智能闭环 (Minimal Intelligent Closed Loop) — 最终验证：训练后消融比率
 =====================================
 对比训练后的 BreakShell Agent vs 消融版本
 """
@@ -8,7 +8,7 @@ import numpy as np
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-from youwo.breakshell.agent import BreakShellAgent
+from micl.breakshell.agent import BreakShellAgent
 from breakout_benchmark import SelfKnowledgeV2
 from functional_coupling_v2 import FunctionalCouplingV2
 

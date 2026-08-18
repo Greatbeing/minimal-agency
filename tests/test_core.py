@@ -11,10 +11,10 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from youwo.breakshell.agent import BreakShellAgent
-from youwo.breakshell.self_model import SelfModel
-from youwo.breakshell.planner import CounterfactualPlanner, WorldModel
-from youwo.breakshell.si_measurement import SIMeasurement
+from micl.breakshell.agent import BreakShellAgent
+from micl.breakshell.self_model import SelfModel
+from micl.breakshell.planner import CounterfactualPlanner, WorldModel
+from micl.breakshell.si_measurement import SIMeasurement
 
 
 class TestSelfModel:
