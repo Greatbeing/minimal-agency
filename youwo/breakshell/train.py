@@ -12,8 +12,8 @@ import os
 # 添加父目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from agent import BreakShellAgent
-from environment import GridWorld, NonStationaryGridWorld, ProceduralLabyrinth
+from .agent import BreakShellAgent
+from .environment import GridWorld, NonStationaryGridWorld, ProceduralLabyrinth
 
 
 def train_breakshell(env_name: str = "gridworld", num_episodes: int = 200,

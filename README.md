@@ -1,15 +1,17 @@
-# 有我 (Self-Present)
+# 有我 (Self-Presence)
 
-> **从"无我"到"有我" — 主体性涌现的形式化、计算实验与 Agent 原型**
+> **从"无我"到"有我" — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型**
 
+[![CI](https://github.com/Greatbeing/minimal-agency/actions/workflows/ci.yml/badge.svg)](https://github.com/Greatbeing/minimal-agency/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
+[![GitHub stars](https://img.shields.io/github/stars/Greatbeing/minimal-agency?style=social)](https://github.com/Greatbeing/minimal-agency)
 
 ---
 
 ## 这是什么
 
-一个回答**"AI 何时从工具变主体？"**的研究项目。
+**一句话回答：AI 何时从工具变主体？**
 
 不是 benchmark 刷分，不是 scaling law 拟合 — 是从第一性原理推导主体性的充要条件，用计算实验验证，并用标准化 benchmark 让社区可复现。
 
@@ -17,7 +19,7 @@
 
 ## 核心结论
 
-### 1. 主体性是相变，不是渐变
+### 主体性是相变，不是渐变
 
 | 层级 | 定义 | SI 范围 | 状态 |
 |------|------|---------|------|
@@ -25,11 +27,11 @@
 | **L6** | **自我模型 × 反事实规划 功能集成** | **SI > 0.18** | **主体性相变点** |
 | L7 | +元认知校准 | SI 取决于环境 | 超越 L6 的条件 |
 
-### 2. SEC-4/5 是当前瓶颈
+### SEC-4/5 是当前瓶颈
 
 所有前沿 LLM（GPT-5.6-sol、DeepSeek-v4-flash、Longcat-2.0）都满足 SEC-1/2/3，但在 SEC-4（行为参与性）和 SEC-5（信息真实性）上不稳定。
 
-### 3. 形式耦合 ≠ 功能耦合
+### 形式耦合 ≠ 功能耦合
 
 消融实验揭示：**仅仅在架构上硬连线自我模型是不够的。系统必须学会使用自我模型。**
 
@@ -38,7 +40,7 @@
 ## 项目结构
 
 ```
-有我 (Self-Present)
+有我 (Self-Presence)
 ├── formalization.md          # 形式化框架（6条必要条件 + 5条SEC充分条件）
 ├── theory_bridge.md          # FEP / Ashby / 唯识学统一桥接
 ├── simulation.py             # L0-L6 相变实验
@@ -48,7 +50,7 @@
 ├── generalization_test.py    # 复杂迷宫泛化
 ├── paper.tex                 # 学术论文 LaTeX
 │
-├── youwo/breakshell/           # BreakShell Agent 原型（破壳）
+├── youwo/breakshell/         # BreakShell Agent 原型（破壳）
 │   ├── agent.py              # 主 Agent（自我模型硬连线）
 │   ├── self_model.py         # 自我模型模块
 │   ├── planner.py            # 反事实规划器
@@ -71,6 +73,14 @@
 
 ## 快速开始
 
+### 安装
+
+```bash
+git clone https://github.com/Greatbeing/minimal-agency.git
+cd minimal-agency
+pip install -r requirements.txt
+```
+
 ### 运行 L0-L6 相变实验
 
 ```bash
@@ -89,6 +99,12 @@ python youwo/breakshell/sec_bench.py
 ```bash
 cd youwo/breakshell
 python ablation_experiment.py
+```
+
+### 运行测试
+
+```bash
+pytest tests/ -v
 ```
 
 ---
@@ -199,7 +215,7 @@ SI = 0.35 × SM_participation + 0.25 × CF_depth + 0.20 × FB_coupling + 0.20 ×
 
 ```bibtex
 @misc{selfpresent2026,
-  title={有我 (Self-Present): 主体性涌现的形式化、计算实验与 Agent 原型},
+  title={有我 (Self-Presence): 主体性涌现的形式化、计算实验与 Agent 原型},
   author={Greatbeing},
   year={2026},
   howpublished={\url{https://github.com/Greatbeing/minimal-agency}},

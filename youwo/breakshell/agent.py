@@ -7,9 +7,9 @@ BreakShell Agent — 主 Agent 模块
 import numpy as np
 from typing import Dict, Tuple, Optional
 
-from self_model import SelfModel
-from planner import CounterfactualPlanner, WorldModel
-from si_measurement import SIMeasurement
+from .self_model import SelfModel
+from .planner import CounterfactualPlanner, WorldModel
+from .si_measurement import SIMeasurement
 
 
 class BreakShellAgent:
