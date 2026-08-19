@@ -71,6 +71,15 @@ def main():
     eval_parser = subparsers.add_parser('eval', help='运行评测')
     eval_parser.add_argument('--category', type=str, default=None)
 
+    # knowledge
+    know_parser = subparsers.add_parser('knowledge', help='知识银行')
+    know_sub = know_parser.add_subparsers(dest='know_cmd')
+    know_import = know_sub.add_parser('import', help='导入文档')
+    know_import.add_argument('path', type=str)
+    know_search = know_sub.add_parser('search', help='搜索知识')
+    know_search.add_argument('query', type=str)
+    know_stats = know_sub.add_parser('stats', help='知识库统计')
+
     # cognitive
     cog_parser = subparsers.add_parser('cognitive', help='认知 Agent 演示')
     cog_parser.add_argument('--goal', type=str, default='分析项目结构')
@@ -198,13 +207,29 @@ def main():
     elif args.command == 'cognitive':
         from breakshell.cognitive import create_cognitive_agent
         agent = create_cognitive_agent()
-        result = agent.process(args.goal, 
+        result = agent.process(args.goal,
             [{'step': 0, 'success': True}, {'step': 1, 'success': True}],
             [{'tool': 'list_dir', 'args': {'path': '.'}, 'result': {'success': True}}],
             True)
         print("反思结果:")
         import json
         print(json.dumps(result['reflection'], ensure_ascii=False, indent=2))
+
+    elif args.command == 'knowledge':
+        from breakshell.knowledge import create_knowledge_store, import_markdown, SearchEngine
+        store = create_knowledge_store()
+        if args.know_cmd == 'import':
+            kid = import_markdown(args.path, store)
+            print(f"导入成功: {kid}")
+        elif args.know_cmd == 'search':
+            search = SearchEngine(store)
+            results = search.search(args.query)
+            print(f"搜索 '{args.query}': {len(results)} 个结果")
+            for r in results:
+                print(f"  {r['title']} ({r['type']}) - 分数: {r['score']}")
+        elif args.know_cmd == 'stats':
+            stats = store.count_by_status()
+            print(f"知识库统计: {stats}")
 
 
 if __name__ == '__main__':
