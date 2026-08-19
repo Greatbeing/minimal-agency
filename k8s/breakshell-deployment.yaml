@@ -1,0 +1,516 @@
+# BreakShell Kubernetes Deployment
+# 完整 K8s 部署配置：Deployment + Service + Ingress + HPA + ConfigMap + Secret
+
+---
+# ========================================
+# 1. Namespace
+# ========================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: breakshell
+  labels:
+    name: breakshell
+    environment: production
+
+---
+# ========================================
+# 2. ConfigMap - 应用配置
+# ========================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: breakshell-config
+  namespace: breakshell
+data:
+  APP_ENV: "production"
+  LOG_LEVEL: "INFO"
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  WORKERS: "4"
+  DB_POOL_SIZE: "10"
+  DB_MAX_OVERFLOW: "20"
+  RATE_LIMIT_REQUESTS: "1000"
+  RATE_LIMIT_WINDOW: "60"
+  AUTH_ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+  AUTH_REFRESH_TOKEN_EXPIRE_DAYS: "7"
+
+---
+# ========================================
+# 3. Secret - 敏感配置
+# ========================================
+apiVersion: v1
+kind: Secret
+metadata:
+  name: breakshell-secrets
+  namespace: breakshell
+type: Opaque
+stringData:
+  # 生产环境请替换为真实值
+  JWT_SECRET_KEY: "your-super-secret-jwt-key-min-32-chars"
+  DB_PASSWORD: "your-db-password"
+  REDIS_PASSWORD: "your-redis-password"
+  PROFY_API_KEY: "your-profy-api-key"
+  DEEPSEEK_API_KEY: "your-deepseek-api-key"
+  GRAFANA_PASSWORD: "your-grafana-password"
+
+---
+# ========================================
+# 4. ServiceAccount + RBAC
+# ========================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: breakshell-sa
+  namespace: breakshell
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: breakshell-role
+  namespace: breakshell
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets", "pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: breakshell-role-binding
+  namespace: breakshell
+subjects:
+  - kind: ServiceAccount
+    name: breakshell-sa
+    namespace: breakshell
+roleRef:
+  kind: Role
+  name: breakshell-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ========================================
+# 5. Deployment - 主应用
+# ========================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: breakshell-api
+  namespace: breakshell
+  labels:
+    app: breakshell-api
+    version: v0.9.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: breakshell-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: breakshell-api
+        version: v0.9.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: breakshell-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: breakshell-api
+          image: breakshell:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: breakshell-config
+            - secretRef:
+                name: breakshell-secrets
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PYTHONPATH
+              value: "/app"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+            - name: data
+              mountPath: /app/data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: logs
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+
+---
+# ========================================
+# 6. Service - 内部服务
+# ========================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: breakshell-api
+  namespace: breakshell
+  labels:
+    app: breakshell-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
+      name: http
+  selector:
+    app: breakshell-api
+
+---
+# ========================================
+# 7. Ingress - 外部访问
+# ========================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: breakshell-ingress
+  namespace: breakshell
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1s"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - api.breakshell.yourdomain.com
+      secretName: breakshell-tls
+  rules:
+    - host: api.breakshell.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: breakshell-api
+                port:
+                  number: 80
+
+---
+# ========================================
+# 8. HorizontalPodAutoscaler (HPA)
+# ========================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: breakshell-api-hpa
+  namespace: breakshell
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: breakshell-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: http_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
+
+---
+# ========================================
+# 9. Prometheus ServiceMonitor
+# ========================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: breakshell-api-monitor
+  namespace: breakshell
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: breakshell-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - breakshell
+
+---
+# ========================================
+# 10. PodDisruptionBudget
+# ========================================
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: breakshell-api-pdb
+  namespace: breakshell
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: breakshell-api
+
+---
+# ========================================
+# 11. NetworkPolicy
+# ========================================
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: breakshell-api-netpol
+  namespace: breakshell
+spec:
+  podSelector:
+    matchLabels:
+      app: breakshell-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# ========================================
+# 12. Redis Deployment
+# ========================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: breakshell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: data
+          emptyDir: {}
+
+---
+# ========================================
+# 13. Redis Service
+# ========================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: breakshell
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+
+---
+# ========================================
+# 14. PostgreSQL (使用外部托管或 StatefulSet)
+# ========================================
+# 建议使用云托管 PostgreSQL (RDS/Cloud SQL) 或使用 StatefulSet
+# 此处仅提供 Service 引用外部数据库
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-external
+  namespace: breakshell
+spec:
+  type: ExternalName
+  externalName: your-postgres-instance.your-cloud-provider.com
+  ports:
+    - port: 5432
+
+---
+# ========================================
+# 使用说明
+# ========================================
+# 1. 创建命名空间和基础资源：
+#    kubectl apply -f k8s/00-namespace.yaml
+#    kubectl apply -f k8s/01-configmap.yaml
+#    kubectl apply -f k8s/02-secrets.yaml
+#
+# 2. 创建数据库（或使用外部托管）
+#    kubectl apply -f k8s/14-postgres.yaml
+#
+# 3. 部署 Redis
+#    kubectl apply -f k8s/12-redis.yaml
+#    kubectl apply -f k8s/13-redis-service.yaml
+#
+# 4. 初始化数据库（运行一次性 Job）
+#    kubectl apply -f k8s/db-init-job.yaml
+#
+# 5. 部署主应用
+#    kubectl apply -f k8s/05-deployment.yaml
+#    kubectl apply -f k8s/06-service.yaml
+#
+# 6. 配置 HPA 和监控
+#    kubectl apply -f k8s/08-hpa.yaml
+#    kubectl apply -f k8s/09-servicemonitor.yaml
+#
+# 7. 配置网络策略和 PDB
+#    kubectl apply -f k8s/10-pdb.yaml
+#    kubectl apply -f k8s/11-networkpolicy.yaml
+#
+# 8. 配置 Ingress（需要 cert-manager 和 nginx-ingress）
+#    kubectl apply -f k8s/07-ingress.yaml
+#
+# 验证部署：
+# kubectl get pods -n breakshell
+# kubectl logs -n breakshell -l app=breakshell-api -f
+# kubectl get hpa -n breakshell

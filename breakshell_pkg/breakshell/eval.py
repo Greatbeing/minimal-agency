@@ -265,3 +265,104 @@ if __name__ == "__main__":
     with open("eval_report.md", "w", encoding="utf-8") as f:
         f.write(report)
     print("\n报告已保存: eval_report.md")
+
+
+# ========================================
+# OutputParser 类 - 供外部导入
+# ========================================
+
+try:
+    import jsonschema
+    HAS_JSONSCHEMA = True
+except:
+    HAS_JSONSCHEMA = False
+
+ACTION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "tool": {"type": "string"},
+        "args": {"type": "object"},
+        "reason": {"type": "string"},
+        "finish": {"type": "boolean"}
+    },
+    "required": ["tool", "args", "reason", "finish"]
+}
+
+class OutputParser:
+    def __init__(self, schema=None, max_retries=3):
+        self.schema = schema or {
+            "type": "object",
+            "properties": {
+                "tool": {"type": "string"},
+                "args": {"type": "object"},
+                "reason": {"type": "string"},
+                "finish": {"type": "boolean"}
+            },
+            "required": ["tool", "args", "reason", "finish"]
+        }
+        self.validator = None
+        if HAS_JSONSCHEMA:
+            try: 
+                self.validator = jsonschema.Draft7Validator(self.schema)
+            except: 
+                pass
+    
+    def parse(self, content):
+        json_str = self._extract_json(content)
+        if not json_str: 
+            return None, "未找到 JSON"
+        try: 
+            plan = json.loads(json_str)
+        except:
+            fixed = self._try_fix_json(content)
+            if fixed:
+                try: 
+                    plan = json.loads(fixed)
+                except: 
+                    return None, "JSON 解析失败"
+            else: 
+                return None, "JSON 解析失败"
+        
+        if self.validator:
+            errors = list(self.validator.iter_errors(plan))
+            if errors:
+                fixed = self._auto_fix_plan(plan, errors)
+                if fixed: 
+                    plan = fixed
+                else: 
+                    return None, f"Schema: {errors[0].message}"
+        return plan, None
+    
+    def _extract_json(self, content):
+        if "```json" in content: 
+            return content.split("```json")[1].split("```")[0].strip()
+        if "```" in content:
+            for p in content.split("```")[1::2]:
+                s = p.strip()
+                if s.startswith("{"): 
+                    return s
+        if content.strip().startswith("{"): 
+            return content.strip()
+        return None
+    
+    def _try_fix_json(self, s):
+        try: 
+            json.loads(re.sub(r',\s*([}\]])', r'\1', s))
+            return s
+        except: 
+            return None
+    
+    def _auto_fix_plan(self, plan, errors):
+        fixed = plan.copy()
+        for e in errors:
+            if e.validator == "required":
+                for f in e.validator_value:
+                    if f not in fixed:
+                        if f == "args": fixed[f] = {}
+                        elif f == "reason": fixed[f] = "auto"
+                        elif f == "finish": fixed[f] = False
+                        elif f == "tool": fixed[f] = "list_dir"
+            elif e.validator == "type" and e.validator_value == "boolean":
+                if "finish" in fixed and not isinstance(fixed["finish"], bool):
+                    fixed["finish"] = str(fixed["finish"]).lower() in ("true", "1", "yes")
+        return fixed

@@ -1,5 +1,5 @@
 # BreakShell Financial Agent - Docker Compose
-# 一键部署完整栈：API + Redis + Prometheus + Grafana
+# 一键部署完整栈：API + Redis + Prometheus + Grafana + Node Exporter + cAdvisor
 
 version: '3.8'
 
@@ -26,9 +26,12 @@ services:
       - API_TOKEN=${API_TOKEN:-changeme}
       - PROFY_API_KEY=${PROFY_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_EXPERIMENT=breakshell-experiments
     depends_on:
       - redis
       - prometheus
+      - mlflow
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
@@ -78,6 +81,7 @@ services:
       - "9090:9090"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus/rules:/etc/prometheus/rules
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -112,6 +116,26 @@ services:
       - prometheus
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ========================================
+  # MLflow 模型版本管理
+  # ========================================
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.8.0
+    container_name: breakshell-mlflow
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5000/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -156,6 +180,7 @@ volumes:
   redis_data:
   prometheus_data:
   grafana_data:
+  mlflow_data:
 
 networks:
   default:

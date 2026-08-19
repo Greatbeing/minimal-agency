@@ -1,0 +1,91 @@
+# BreakShell Database Initialization Job
+# 一次性 Job：初始化数据库表、创建默认角色、创建超级用户
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: breakshell-db-init
+  namespace: breakshell
+  labels:
+    app: breakshell-db-init
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: breakshell-db-init
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: breakshell-sa
+      containers:
+        - name: db-init
+          image: breakshell:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -m
+            - breakshell.database
+            - --init
+            - --create-roles
+            - --create-superuser
+          envFrom:
+            - configMapRef:
+                name: breakshell-config
+            - secretRef:
+                name: breakshell-secrets
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# 数据库迁移 Job (用于版本升级)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: breakshell-db-migrate
+  namespace: breakshell
+  labels:
+    app: breakshell-db-migrate
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: breakshell-db-migrate
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: breakshell-sa
+      containers:
+        - name: db-migrate
+          image: breakshell:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - alembic
+            - upgrade
+            - head
+          envFrom:
+            - configMapRef:
+                name: breakshell-config
+            - secretRef:
+                name: breakshell-secrets
+          workingDir: /app
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
