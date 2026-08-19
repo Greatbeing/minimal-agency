@@ -1,6 +1,6 @@
 # BreakShell 评测报告
 
-生成时间: 2026-08-19T17:40:02.872392
+生成时间: 2026-08-19T18:12:15.851537
 
 ## 评测概览
 - 总测试数: 28
@@ -18,9 +18,9 @@
 - sec_bench: 7/7 (100%)
 
 ## 性能基准
-- 工具平均执行时间: 6.57ms
-- Agent Loop 平均耗时: 11.14ms
-  - list_dir: 1.55ms (p95: 2.35ms)
-  - read_file: 0.15ms (p95: 0.23ms)
-  - shell: 15.12ms (p95: 17.73ms)
-  - grep_files: 9.45ms (p95: 11.9ms)
+- 工具平均执行时间: 7.12ms
+- Agent Loop 平均耗时: 13.78ms
+  - list_dir: 1.97ms (p95: 3.34ms)
+  - read_file: 0.14ms (p95: 0.19ms)
+  - shell: 15.03ms (p95: 19.34ms)
+  - grep_files: 11.36ms (p95: 17.01ms)
