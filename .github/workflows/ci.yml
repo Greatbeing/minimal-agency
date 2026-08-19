@@ -19,12 +19,11 @@ jobs:
         with:
           python-version: "3.11"
       
-      - name: Install minimal deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy
+          pip install numpy torch --index-url https://download.pytorch.org/whl/cpu
+          pip install pytest
       
-      - name: Run test
-        run: |
-          python -c "import sys; sys.path.insert(0, '.'); from breakshell_pkg.breakshell.agent import BreakShell; import numpy as np; a = BreakShell(action_dim=3); act, info = a.act(); print('OK: action=', act)"
-        continue-on-error: true
+      - name: Run tests
+        run: python tests/ci_test.py
