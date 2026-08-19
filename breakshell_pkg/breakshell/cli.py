@@ -70,6 +70,10 @@ def main():
     # eval
     eval_parser = subparsers.add_parser('eval', help='运行评测')
     eval_parser.add_argument('--category', type=str, default=None)
+
+    # cognitive
+    cog_parser = subparsers.add_parser('cognitive', help='认知 Agent 演示')
+    cog_parser.add_argument('--goal', type=str, default='分析项目结构')
     
     args = parser.parse_args()
     
@@ -190,6 +194,17 @@ def main():
         print(f"\n分类统计:")
         for cat, stats in results['categories'].items():
             print(f"  {cat}: {stats['passed']}/{stats['total']} ({stats['rate']:.0%})")
+
+    elif args.command == 'cognitive':
+        from breakshell.cognitive import create_cognitive_agent
+        agent = create_cognitive_agent()
+        result = agent.process(args.goal, 
+            [{'step': 0, 'success': True}, {'step': 1, 'success': True}],
+            [{'tool': 'list_dir', 'args': {'path': '.'}, 'result': {'success': True}}],
+            True)
+        print("反思结果:")
+        import json
+        print(json.dumps(result['reflection'], ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

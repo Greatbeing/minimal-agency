@@ -28,11 +28,14 @@ from .agent import BreakShell, NormalAgent
 from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
 from .llm_agent import run_agent, AgentLoop, create_llm, create_default_registry
 from .eval import EvalRunner, PerformanceBenchmark, save_dataset
+from .cognitive import CognitiveAgent, create_cognitive_agent, ReflectionEngine, EpisodicMemory, SemanticMemory
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __all__ = [
     "BreakShell", "NormalAgent",
     "CapabilityEnv", "EnergyEnv", "FinancialEnv",
     "run_agent", "AgentLoop", "create_llm", "create_default_registry",
     "EvalRunner", "PerformanceBenchmark", "save_dataset",
+    "CognitiveAgent", "create_cognitive_agent", "ReflectionEngine",
+    "EpisodicMemory", "SemanticMemory",
 ]
