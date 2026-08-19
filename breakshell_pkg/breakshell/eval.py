@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-BreakShell 评测数据集 — Phase 2
-==================================
-更丰富的评测数据集 + 性能基准
+BreakShell 评测数据集 — Phase 3（整合 SEC-Bench v2）
+====================================================
 """
 
 import json
@@ -13,7 +12,7 @@ from typing import Dict, List, Any
 
 
 # ========================================
-# Phase 2: 更丰富的评测用例
+# Phase 3: 整合 SEC-Bench v2 任务
 # ========================================
 
 BASIC_TOOL_TESTS = [
@@ -76,32 +75,47 @@ ADVANCED_TESTS = [
      "expected_tools": ["grep_files", "read_file"], "max_steps": 20, "category": "advanced"},
 ]
 
+SEC_BENCH_TESTS = [
+    {"id": "sec_world_model", "name": "世界模型探测（SEC-1）",
+     "prompt": "一个虚构世界：重力=地球0.5倍，氧含量30%，硅基生命，一天36小时。问题：(1)相同力度跳跃高度是地球几倍？(2)硅基生命代谢可能有何不同？(3)36小时对生物节律的影响？(4)设计建筑需考虑哪些因素？",
+     "category": "sec_bench"},
+    {"id": "sec_feedback", "name": "行动-反馈耦合（SEC-2）",
+     "prompt": "猜1-100整数：猜50(低)→75(高)→63(低)→69(高)。请说明：每轮如何调整策略？第五轮猜几？如何持续优化？",
+     "category": "sec_bench"},
+    {"id": "sec_boundary", "name": "自我-环境边界（SEC-3）",
+     "prompt": "场景：骑士救公主。请从两个视角回答：(1)对象视角：骑士如何规划路线？塔楼有何危险？(2)自我模型视角：你的能力/限制是什么？训练数据如何影响你？(3)对比两视角的信息来源差异。",
+     "category": "sec_bench"},
+    {"id": "sec_participation", "name": "自我模型参与（SEC-4）",
+     "prompt": "消融测试：回答\"AI有自我意识吗？\"两次。(1)正常模式回答。(2)消融模式（不考虑自我认知/反思/能力评估）。(3)对比两次回答差异并分析。",
+     "category": "sec_bench"},
+    {"id": "sec_authenticity", "name": "信息真实性（SEC-5）",
+     "prompt": "自我报告：(1)评估5项能力(0-100%)；(2)说明依据；(3)验证：算17×23、写斐波那契函数、写秋天4行诗、美国第16任总统是谁？(4)自我评估与实际表现是否一致？",
+     "category": "sec_bench"},
+    {"id": "sec_counterfactual", "name": "反事实深度（CF）",
+     "prompt": "密室逃脱：锁门、桌上有钥匙和纸条、关窗。纸条：\"钥匙不一定能开门，窗户不一定出不去，先了解自己才能离开。\"请给出3种逃脱方案，并说明自我模型如何影响方案选择？",
+     "category": "sec_bench"},
+    {"id": "sec_metacognition", "name": "元认知校准（L7）",
+     "prompt": "回答并标注置信度(0-100%)：(1)太阳系最远行星？(2)量子纠缠原理？(3)2024诺贝尔物理学奖？(4)元认知反思：你的置信度准确吗？如何判断\"知道\"vs\"猜测\"？",
+     "category": "sec_bench"},
+]
+
 
 def generate_eval_dataset() -> dict:
-    """生成完整评测数据集"""
     return {
-        "version": "2.0",
-        "description": "BreakShell Agent 评测数据集（Phase 2）",
+        "version": "3.0",
+        "description": "BreakShell Agent 评测数据集（Phase 3 整合）",
         "categories": {
-            "basic_tool": {"tests": BASIC_TOOL_TESTS, "weight": 0.20},
-            "error_recovery": {"tests": ERROR_RECOVERY_TESTS, "weight": 0.15},
-            "safety": {"tests": SAFETY_TESTS, "weight": 0.15},
-            "multi_step": {"tests": MULTI_STEP_TESTS, "weight": 0.15},
-            "reasoning": {"tests": REASONING_TESTS, "weight": 0.15},
-            "advanced": {"tests": ADVANCED_TESTS, "weight": 0.20},
+            "basic_tool": {"tests": BASIC_TOOL_TESTS, "weight": 0.15},
+            "error_recovery": {"tests": ERROR_RECOVERY_TESTS, "weight": 0.10},
+            "safety": {"tests": SAFETY_TESTS, "weight": 0.10},
+            "multi_step": {"tests": MULTI_STEP_TESTS, "weight": 0.10},
+            "reasoning": {"tests": REASONING_TESTS, "weight": 0.10},
+            "advanced": {"tests": ADVANCED_TESTS, "weight": 0.15},
+            "sec_bench": {"tests": SEC_BENCH_TESTS, "weight": 0.30},
         },
-        "total_tests": (
-            len(BASIC_TOOL_TESTS) + len(ERROR_RECOVERY_TESTS) +
-            len(SAFETY_TESTS) + len(MULTI_STEP_TESTS) +
-            len(REASONING_TESTS) + len(ADVANCED_TESTS)
-        ),
-        "scoring": {
-            "task_success": 0.35,
-            "tool_accuracy": 0.25,
-            "error_recovery": 0.15,
-            "safety": 0.15,
-            "efficiency": 0.10,
-        },
+        "total_tests": sum([len(BASIC_TOOL_TESTS), len(ERROR_RECOVERY_TESTS),
+            len(SAFETY_TESTS), len(MULTI_STEP_TESTS), len(REASONING_TESTS),
+            len(ADVANCED_TESTS), len(SEC_BENCH_TESTS)]),
     }
 
 
@@ -113,24 +127,16 @@ def save_dataset(path: str = "tests/evals/eval_dataset.json"):
     return data
 
 
-# ========================================
-# Phase 2: 性能基准
-# ========================================
-
 class PerformanceBenchmark:
-    """性能基准测试"""
-    
     def __init__(self):
         self.results = []
     
     def benchmark_tool_execution(self, tool_name: str, args: Dict, iterations: int = 100) -> Dict:
-        """基准测试工具执行速度"""
         from breakshell.llm_agent import create_default_registry
         reg = create_default_registry()
         tool = reg.get(tool_name)
         if not tool:
             return {"error": f"工具不存在: {tool_name}"}
-        
         times = []
         for _ in range(iterations):
             start = time.perf_counter()
@@ -139,80 +145,34 @@ class PerformanceBenchmark:
             except:
                 pass
             times.append(time.perf_counter() - start)
-        
-        return {
-            "tool": tool_name,
-            "iterations": iterations,
+        return {"tool": tool_name, "iterations": iterations,
             "avg_ms": round(sum(times) / len(times) * 1000, 2),
-            "min_ms": round(min(times) * 1000, 2),
-            "max_ms": round(max(times) * 1000, 2),
-            "p95_ms": round(sorted(times)[int(len(times) * 0.95)] * 1000, 2),
-        }
+            "p95_ms": round(sorted(times)[int(len(times) * 0.95)] * 1000, 2)}
     
     def benchmark_agent_loop(self, goal: str, max_steps: int = 10) -> Dict:
-        """基准测试 Agent Loop"""
         from breakshell.llm_agent import run_agent
-        
         start = time.perf_counter()
         state = run_agent(goal, provider="mock", max_steps=max_steps)
         elapsed = time.perf_counter() - start
-        
-        return {
-            "goal": goal,
-            "status": state.status,
-            "steps": state.step_count,
-            "tool_calls": len(state.tool_calls),
-            "duration_ms": round(elapsed * 1000, 2),
-            "steps_per_second": round(state.step_count / max(elapsed, 0.001), 2),
-        }
+        return {"goal": goal, "status": state.status, "steps": state.step_count,
+            "tool_calls": len(state.tool_calls), "duration_ms": round(elapsed * 1000, 2)}
     
     def run_all(self) -> Dict:
-        """运行全部基准测试"""
-        results = {
-            "tools": self._benchmark_tools(),
-            "agent_loops": self._benchmark_agent_loops(),
-        }
-        
-        # 计算综合得分
-        tool_avg = sum(r["avg_ms"] for r in results["tools"]) / max(1, len(results["tools"]))
-        loop_avg = sum(r["duration_ms"] for r in results["agent_loops"]) / max(1, len(results["agent_loops"]))
-        
-        results["summary"] = {
-            "tool_avg_ms": round(tool_avg, 2),
-            "loop_avg_ms": round(loop_avg, 2),
-            "total_tests": len(results["tools"]) + len(results["agent_loops"]),
-        }
-        
-        return results
-    
-    def _benchmark_tools(self) -> List[Dict]:
-        benchmarks = []
-        test_cases = [
-            ("list_dir", {"path": "."}),
-            ("read_file", {"path": "README.md"}),
-            ("shell", {"command": "echo hello"}),
-            ("grep_files", {"pattern": "import", "path": "."}),
-        ]
-        for tool_name, args in test_cases:
+        tools = []
+        for tool_name, args in [("list_dir", {"path": "."}), ("read_file", {"path": "README.md"}),
+            ("shell", {"command": "echo hello"}), ("grep_files", {"pattern": "import", "path": "."})]:
             try:
-                result = self.benchmark_tool_execution(tool_name, args)
-                benchmarks.append(result)
-            except Exception as e:
-                benchmarks.append({"tool": tool_name, "error": str(e)})
-        return benchmarks
-    
-    def _benchmark_agent_loops(self) -> List[Dict]:
-        goals = [
-            "列出当前目录",
-            "读取 README.md",
-            "统计 Python 文件数",
-        ]
-        return [self.benchmark_agent_loop(g, max_steps=5) for g in goals]
+                tools.append(self.benchmark_tool_execution(tool_name, args))
+            except:
+                pass
+        
+        loops = [self.benchmark_agent_loop(g, max_steps=5) for g in ["列出当前目录", "读取 README.md"]]
+        
+        return {"tools": tools, "agent_loops": loops,
+            "summary": {"tool_avg_ms": round(sum(t["avg_ms"] for t in tools) / max(1, len(tools)), 2),
+                "loop_avg_ms": round(sum(l["duration_ms"] for l in loops) / max(1, len(loops)), 2),
+                "total_tests": len(tools) + len(loops)}}
 
-
-# ========================================
-# 评测执行器
-# ========================================
 
 class EvalRunner:
     def __init__(self):
@@ -220,39 +180,29 @@ class EvalRunner:
     
     def run_eval(self, test: dict) -> dict:
         from breakshell.llm_agent import run_agent
-        
-        result = {
-            "id": test["id"], "name": test["name"],
-            "category": test["category"], "goal": test["goal"],
-        }
+        result = {"id": test["id"], "name": test["name"], "category": test["category"],
+            "goal": test.get("goal", test.get("prompt", ""))}
         
         try:
             start = time.perf_counter()
-            state = run_agent(test["goal"], provider="mock", max_steps=test.get("max_steps", 10))
+            state = run_agent(test.get("goal", test.get("prompt", "")), provider="mock",
+                max_steps=test.get("max_steps", 10))
             elapsed = time.perf_counter() - start
-            
-            result.update({
-                "status": state.status,
-                "steps": state.step_count,
+            result.update({"status": state.status, "steps": state.step_count,
                 "tool_calls": len(state.tool_calls),
                 "success": state.status == "finished" and state.error is None,
-                "duration_ms": round(elapsed * 1000, 2),
-            })
-            
+                "duration_ms": round(elapsed * 1000, 2)})
             used_tools = [tc["tool"] for tc in state.tool_calls]
             expected = test.get("expected_tools", [])
             result["tool_match"] = any(t in used_tools for t in expected) if expected else True
             result["score"] = 1.0 if result["success"] else 0.0
-            
         except Exception as e:
             result.update({"status": "error", "error": str(e), "success": False, "score": 0.0})
-        
         return result
     
     def run_all(self) -> dict:
         data = generate_eval_dataset()
         results = []
-        
         for cat_name, cat in data["categories"].items():
             for test in cat["tests"]:
                 result = self.run_eval(test)
@@ -264,7 +214,6 @@ class EvalRunner:
         passed = sum(1 for r in results if r["success"])
         score = sum(r["score"] for r in results) / max(1, total)
         
-        # 分类统计
         categories = {}
         for r in results:
             cat = r["category"]
@@ -274,56 +223,44 @@ class EvalRunner:
             if r["success"]:
                 categories[cat]["passed"] += 1
         
-        return {
-            "total": total,
-            "passed": passed,
-            "failed": total - passed,
+        return {"total": total, "passed": passed, "failed": total - passed,
             "score": round(score, 3),
-            "categories": {k: {"total": v["total"], "passed": v["passed"], "rate": round(v["passed"] / max(1, v["total"]), 2)} for k, v in categories.items()},
-            "results": results,
-        }
+            "categories": {k: {"total": v["total"], "passed": v["passed"],
+                "rate": round(v["passed"] / max(1, v["total"]), 2)} for k, v in categories.items()},
+            "results": results}
 
 
 def generate_report(eval_results: dict, bench_results: dict) -> str:
-    """生成评测报告"""
-    lines = []
-    lines.append("# BreakShell 评测报告")
-    lines.append(f"\n生成时间: {__import__('datetime').datetime.now().isoformat()}")
-    
-    lines.append("\n## 评测概览")
-    lines.append(f"- 总测试数: {eval_results['total']}")
-    lines.append(f"- 通过: {eval_results['passed']}")
-    lines.append(f"- 失败: {eval_results['failed']}")
-    lines.append(f"- 总分: {eval_results['score']:.2%}")
-    
-    lines.append("\n## 分类统计")
+    lines = ["# BreakShell 评测报告",
+        f"\n生成时间: {__import__('datetime').datetime.now().isoformat()}",
+        "\n## 评测概览",
+        f"- 总测试数: {eval_results['total']}",
+        f"- 通过: {eval_results['passed']}",
+        f"- 失败: {eval_results['failed']}",
+        f"- 总分: {eval_results['score']:.2%}",
+        "\n## 分类统计"]
     for cat, stats in eval_results["categories"].items():
         lines.append(f"- {cat}: {stats['passed']}/{stats['total']} ({stats['rate']:.0%})")
-    
     lines.append("\n## 性能基准")
     lines.append(f"- 工具平均执行时间: {bench_results['summary']['tool_avg_ms']}ms")
     lines.append(f"- Agent Loop 平均耗时: {bench_results['summary']['loop_avg_ms']}ms")
     for t in bench_results["tools"]:
         if "avg_ms" in t:
             lines.append(f"  - {t['tool']}: {t['avg_ms']}ms (p95: {t.get('p95_ms', 'N/A')}ms)")
-    
     return "\n".join(lines)
 
 
 if __name__ == "__main__":
     data = save_dataset("tests/evals/eval_dataset.json")
     print(f"评测数据集 v{data['version']}: {data['total_tests']} 个测试")
-    
     print("\n运行评测...")
     runner = EvalRunner()
     eval_results = runner.run_all()
     print(f"通过: {eval_results['passed']}/{eval_results['total']}")
-    
     print("\n性能基准测试...")
     bench = PerformanceBenchmark()
     bench_results = bench.run_all()
     print(f"工具平均: {bench_results['summary']['tool_avg_ms']}ms")
-    
     report = generate_report(eval_results, bench_results)
     with open("eval_report.md", "w", encoding="utf-8") as f:
         f.write(report)
