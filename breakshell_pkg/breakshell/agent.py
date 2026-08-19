@@ -7,9 +7,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-import json
 import os
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 
 
 class SelfModel(nn.Module):
