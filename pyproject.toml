@@ -3,61 +3,22 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
-name = "minimal-agency"
-version = "0.1.0"
-description = "最小智能闭环 (Minimal Intelligent Closed Loop) — 主体性涌现的形式化、计算实验与 BreakShell Agent 原型"
+name = "breakshell"
+version = "1.0.0"
+description = "BreakShell Agent - AI Agent Self-Model Safety Layer"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
-authors = [
-    {name = "Greatbeing", email = "being19@163.com"}
-]
-keywords = ["ai-agent", "agency", "consciousness", "subjectivity", "yogacara", "agi", "self-model", "phase-transition"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-]
-
 dependencies = [
     "numpy>=1.24.0",
-    "matplotlib>=3.7.0",
-    "requests>=2.31.0",
+    "torch>=2.0.0",
 ]
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "ruff>=0.1.0",
-    "mypy>=1.5.0",
-]
-
-[project.urls]
-Homepage = "https://github.com/Greatbeing/minimal-agency"
-Documentation = "https://github.com/Greatbeing/minimal-agency#readme"
-Repository = "https://github.com/Greatbeing/minimal-agency"
-Issues = "https://github.com/Greatbeing/minimal-agency/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["micl*"]
+include = ["breakshell_pkg*"]
+namespaces = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
-
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
