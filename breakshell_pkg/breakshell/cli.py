@@ -59,6 +59,17 @@ def main():
     session_list.add_argument('--limit', type=int, default=10)
     session_show = session_sub.add_parser('show', help='显示会话详情')
     session_show.add_argument('session_id', type=str)
+    session_resume = session_sub.add_parser('resume', help='恢复会话')
+    session_resume.add_argument('session_id', type=str)
+    session_resume.add_argument('--goal', type=str, default='')
+    
+    # benchmark
+    bench_parser = subparsers.add_parser('benchmark', help='性能基准测试')
+    bench_parser.add_argument('--iterations', type=int, default=100)
+    
+    # eval
+    eval_parser = subparsers.add_parser('eval', help='运行评测')
+    eval_parser.add_argument('--category', type=str, default=None)
     
     args = parser.parse_args()
     
@@ -145,6 +156,40 @@ def main():
                 print(f"Events: {len(data['events'])}")
             else:
                 print("会话不存在")
+        elif args.session_cmd == 'resume':
+            data = store.load_session(args.session_id)
+            if data:
+                print(f"恢复会话: {args.session_id}")
+                print(f"原目标: {data['goal']}")
+                goal = args.goal or data['goal']
+                state = run_agent(goal, provider='mock')
+                print(f"状态: {state.status}")
+            else:
+                print("会话不存在")
+    
+    elif args.command == 'benchmark':
+        from breakshell.eval import PerformanceBenchmark
+        bench = PerformanceBenchmark()
+        results = bench.run_all()
+        print(f"\n性能基准测试结果:")
+        print(f"工具平均执行时间: {results['summary']['tool_avg_ms']}ms")
+        print(f"Agent Loop 平均耗时: {results['summary']['loop_avg_ms']}ms")
+        for t in results['tools']:
+            if 'avg_ms' in t:
+                print(f"  {t['tool']}: {t['avg_ms']}ms (p95: {t.get('p95_ms', 'N/A')}ms)")
+    
+    elif args.command == 'eval':
+        from breakshell.eval import EvalRunner, generate_eval_dataset
+        runner = EvalRunner()
+        results = runner.run_all()
+        print(f"\n评测结果:")
+        print(f"总计: {results['total']} 个测试")
+        print(f"通过: {results['passed']} 个")
+        print(f"失败: {results['failed']} 个")
+        print(f"总分: {results['score']:.2%}")
+        print(f"\n分类统计:")
+        for cat, stats in results['categories'].items():
+            print(f"  {cat}: {stats['passed']}/{stats['total']} ({stats['rate']:.0%})")
 
 
 if __name__ == '__main__':
