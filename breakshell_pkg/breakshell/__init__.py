@@ -41,7 +41,7 @@ except ImportError:
 
 try:
     from .mlflow_integration import MLflowConfig, ExperimentManager, ModelRegistryManager
-except ImportError:
+except Exception:
     pass
 
 try:

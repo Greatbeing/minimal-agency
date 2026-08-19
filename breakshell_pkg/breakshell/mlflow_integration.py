@@ -73,58 +73,61 @@ MLFLOW_CONFIG = MLflowConfig()
 # 2. 模型包装器
 # ========================================
 
-class BreakShellMLflowModel(mlflow.pyfunc.PythonModel):
-    """BreakShell 模型的 MLflow 包装器"""
-    
-    def load_context(self, context):
-        """加载模型上下文"""
-        import torch
-        from breakshell import BreakShell
+if MLFLOW_AVAILABLE:
+    class BreakShellMLflowModel(mlflow.pyfunc.PythonModel):
+        """BreakShell 模型的 MLflow 包装器"""
         
-        # 加载 PyTorch 模型
-        model_path = context.artifacts["model"]
-        self.model = BreakShell(action_dim=3)
-        self.model.load_state_dict(torch.load(model_path, map_location="cpu"))
-        self.model.eval()
+        def load_context(self, context):
+            """加载模型上下文"""
+            import torch
+            from breakshell import BreakShell
+            
+            # 加载 PyTorch 模型
+            model_path = context.artifacts["model"]
+            self.model = BreakShell(action_dim=3)
+            self.model.load_state_dict(torch.load(model_path, map_location="cpu"))
+            self.model.eval()
+            
+            # 加载配置
+            config_path = context.artifacts.get("config")
+            if config_path:
+                with open(config_path, "r") as f:
+                    self.config = json.load(f)
+            else:
+                self.config = {}
         
-        # 加载配置
-        config_path = context.artifacts.get("config")
-        if config_path:
-            with open(config_path, "r") as f:
-                self.config = json.load(f)
-        else:
-            self.config = {}
-    
-    def predict(self, context, model_input):
-        """预测接口"""
-        import torch
-        
-        # 支持多种输入格式
-        if isinstance(model_input, dict):
-            obs = model_input.get("observation")
-            if obs is None:
-                obs = model_input.get("obs")
-        else:
-            obs = model_input
-        
-        # 转换为 tensor
-        if isinstance(obs, list):
-            obs = np.array(obs)
-        if isinstance(obs, np.ndarray):
-            obs = torch.FloatTensor(obs)
-        
-        # 确保批次维度
-        if obs.dim() == 1:
-            obs = obs.unsqueeze(0)
-        
-        with torch.no_grad():
-            action, info = self.model.act(obs)
-        
-        return {
-            "action": int(action) if isinstance(action, (int, np.integer)) else action.tolist(),
-            "log_prob": info.get("log_prob", 0.0),
-            "value": info.get("value", 0.0)
-        }
+        def predict(self, context, model_input):
+            """预测接口"""
+            import torch
+            
+            # 支持多种输入格式
+            if isinstance(model_input, dict):
+                obs = model_input.get("observation")
+                if obs is None:
+                    obs = model_input.get("obs")
+            else:
+                obs = model_input
+            
+            # 转换为 tensor
+            if isinstance(obs, list):
+                obs = np.array(obs)
+            if isinstance(obs, np.ndarray):
+                obs = torch.FloatTensor(obs)
+            
+            # 确保批次维度
+            if obs.dim() == 1:
+                obs = obs.unsqueeze(0)
+            
+            with torch.no_grad():
+                action, info = self.model.act(obs)
+            
+            return {
+                "action": int(action) if isinstance(action, (int, np.integer)) else action.tolist(),
+                "log_prob": info.get("log_prob", 0.0),
+                "value": info.get("value", 0.0)
+            }
+else:
+    BreakShellMLflowModel = None
 
 
 # ========================================
