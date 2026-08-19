@@ -104,7 +104,7 @@ def main():
     
     elif args.command == 'train':
         from breakshell import BreakShell
-        from breakshell.envs import CapabilityEnv, EnergyEnv, FinancialEnv
+        from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
         
         envs = {'capability': CapabilityEnv, 'energy': EnergyEnv, 'financial': FinancialEnv}
         env = envs[args.env](seed=42)
@@ -117,7 +117,7 @@ def main():
     
     elif args.command == 'evaluate':
         from breakshell import BreakShell
-        from breakshell.envs import CapabilityEnv, EnergyEnv, FinancialEnv
+        from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
         
         envs = {'capability': CapabilityEnv, 'energy': EnergyEnv, 'financial': FinancialEnv}
         env = envs[args.env](seed=999)
@@ -129,7 +129,7 @@ def main():
     
     elif args.command == 'compare':
         from breakshell import BreakShell, NormalAgent
-        from breakshell.envs import CapabilityEnv, EnergyEnv, FinancialEnv
+        from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
         
         envs = {'capability': CapabilityEnv, 'energy': EnergyEnv, 'financial': FinancialEnv}
         
@@ -155,7 +155,7 @@ def main():
         print(f"  差异: {be-ne:+.4f}")
     
     elif args.command == 'session':
-        from breakshell.llm_agent import SessionStore
+        from .llm_agent import SessionStore
         store = SessionStore()
         if args.session_cmd == 'list':
             sessions = store.list_sessions(limit=args.limit)
@@ -181,7 +181,7 @@ def main():
                 print("会话不存在")
     
     elif args.command == 'benchmark':
-        from breakshell.eval import PerformanceBenchmark
+        from .eval import PerformanceBenchmark
         bench = PerformanceBenchmark()
         results = bench.run_all()
         print(f"\n性能基准测试结果:")
@@ -192,7 +192,7 @@ def main():
                 print(f"  {t['tool']}: {t['avg_ms']}ms (p95: {t.get('p95_ms', 'N/A')}ms)")
     
     elif args.command == 'eval':
-        from breakshell.eval import EvalRunner, PerformanceBenchmark, generate_report
+        from .eval import EvalRunner, PerformanceBenchmark, generate_report
         runner = EvalRunner()
         eval_results = runner.run_all()
         bench = PerformanceBenchmark()
@@ -211,7 +211,7 @@ def main():
         print(f"\n报告已保存: eval_report.md")
 
     elif args.command == 'cognitive':
-        from breakshell.cognitive import create_cognitive_agent
+        from .cognitive import create_cognitive_agent
         agent = create_cognitive_agent()
         result = agent.process(args.goal,
             [{'step': 0, 'success': True}, {'step': 1, 'success': True}],
@@ -222,7 +222,7 @@ def main():
         print(json.dumps(result['reflection'], ensure_ascii=False, indent=2))
 
     elif args.command == 'knowledge':
-        from breakshell.knowledge import create_knowledge_store, import_markdown, SearchEngine
+        from .knowledge import create_knowledge_store, import_markdown, SearchEngine
         store = create_knowledge_store()
         if args.know_cmd == 'import':
             kid = import_markdown(args.path, store)

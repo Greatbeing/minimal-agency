@@ -15,7 +15,7 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-from breakshell.auth import Base
+from .auth import Base
 
 
 # ========================================
@@ -332,7 +332,7 @@ async def setup_database(drop_existing: bool = False) -> None:
 
 async def create_default_roles() -> None:
     """创建默认角色"""
-    from breakshell.auth import Role, AuthService
+    from .auth import Role, AuthService
     from sqlalchemy import select
     
     async with db_manager.session() as session:
@@ -358,7 +358,7 @@ async def create_default_roles() -> None:
 
 async def create_superuser() -> None:
     """创建超级用户"""
-    from breakshell.auth import User, AuthService, pwd_context
+    from .auth import User, AuthService, pwd_context
     from sqlalchemy import select
     
     email = os.environ.get("SUPERUSER_EMAIL", "admin@breakshell.local")

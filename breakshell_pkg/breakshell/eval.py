@@ -132,7 +132,7 @@ class PerformanceBenchmark:
         self.results = []
     
     def benchmark_tool_execution(self, tool_name: str, args: Dict, iterations: int = 100) -> Dict:
-        from breakshell.llm_agent import create_default_registry
+        from .llm_agent import create_default_registry
         reg = create_default_registry()
         tool = reg.get(tool_name)
         if not tool:
@@ -150,7 +150,7 @@ class PerformanceBenchmark:
             "p95_ms": round(sorted(times)[int(len(times) * 0.95)] * 1000, 2)}
     
     def benchmark_agent_loop(self, goal: str, max_steps: int = 10) -> Dict:
-        from breakshell.llm_agent import run_agent
+        from .llm_agent import run_agent
         start = time.perf_counter()
         state = run_agent(goal, provider="mock", max_steps=max_steps)
         elapsed = time.perf_counter() - start
@@ -179,7 +179,7 @@ class EvalRunner:
         self.results = []
     
     def run_eval(self, test: dict) -> dict:
-        from breakshell.llm_agent import run_agent
+        from .llm_agent import run_agent
         result = {"id": test["id"], "name": test["name"], "category": test["category"],
             "goal": test.get("goal", test.get("prompt", ""))}
         
