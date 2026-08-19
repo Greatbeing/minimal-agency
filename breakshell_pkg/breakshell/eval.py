@@ -284,20 +284,47 @@ class EvalRunner:
         }
 
 
+def generate_report(eval_results: dict, bench_results: dict) -> str:
+    """生成评测报告"""
+    lines = []
+    lines.append("# BreakShell 评测报告")
+    lines.append(f"\n生成时间: {__import__('datetime').datetime.now().isoformat()}")
+    
+    lines.append("\n## 评测概览")
+    lines.append(f"- 总测试数: {eval_results['total']}")
+    lines.append(f"- 通过: {eval_results['passed']}")
+    lines.append(f"- 失败: {eval_results['failed']}")
+    lines.append(f"- 总分: {eval_results['score']:.2%}")
+    
+    lines.append("\n## 分类统计")
+    for cat, stats in eval_results["categories"].items():
+        lines.append(f"- {cat}: {stats['passed']}/{stats['total']} ({stats['rate']:.0%})")
+    
+    lines.append("\n## 性能基准")
+    lines.append(f"- 工具平均执行时间: {bench_results['summary']['tool_avg_ms']}ms")
+    lines.append(f"- Agent Loop 平均耗时: {bench_results['summary']['loop_avg_ms']}ms")
+    for t in bench_results["tools"]:
+        if "avg_ms" in t:
+            lines.append(f"  - {t['tool']}: {t['avg_ms']}ms (p95: {t.get('p95_ms', 'N/A')}ms)")
+    
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
-    # 保存数据集
     data = save_dataset("tests/evals/eval_dataset.json")
     print(f"评测数据集 v{data['version']}: {data['total_tests']} 个测试")
-    for cat_name, cat in data["categories"].items():
-        print(f"  {cat_name}: {len(cat['tests'])} 个")
     
-    # 运行性能基准
+    print("\n运行评测...")
+    runner = EvalRunner()
+    eval_results = runner.run_all()
+    print(f"通过: {eval_results['passed']}/{eval_results['total']}")
+    
     print("\n性能基准测试...")
     bench = PerformanceBenchmark()
     bench_results = bench.run_all()
-    print(f"工具平均执行时间: {bench_results['summary']['tool_avg_ms']}ms")
-    print(f"Agent Loop 平均耗时: {bench_results['summary']['loop_avg_ms']}ms")
+    print(f"工具平均: {bench_results['summary']['tool_avg_ms']}ms")
     
-    for t in bench_results["tools"]:
-        if "avg_ms" in t:
-            print(f"  {t['tool']}: {t['avg_ms']}ms")
+    report = generate_report(eval_results, bench_results)
+    with open("eval_report.md", "w", encoding="utf-8") as f:
+        f.write(report)
+    print("\n报告已保存: eval_report.md")

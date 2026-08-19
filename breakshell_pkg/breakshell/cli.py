@@ -192,17 +192,23 @@ def main():
                 print(f"  {t['tool']}: {t['avg_ms']}ms (p95: {t.get('p95_ms', 'N/A')}ms)")
     
     elif args.command == 'eval':
-        from breakshell.eval import EvalRunner, generate_eval_dataset
+        from breakshell.eval import EvalRunner, PerformanceBenchmark, generate_report
         runner = EvalRunner()
-        results = runner.run_all()
+        eval_results = runner.run_all()
+        bench = PerformanceBenchmark()
+        bench_results = bench.run_all()
+        report = generate_report(eval_results, bench_results)
+        with open("eval_report.md", "w", encoding="utf-8") as f:
+            f.write(report)
         print(f"\n评测结果:")
-        print(f"总计: {results['total']} 个测试")
-        print(f"通过: {results['passed']} 个")
-        print(f"失败: {results['failed']} 个")
-        print(f"总分: {results['score']:.2%}")
+        print(f"总计: {eval_results['total']} 个测试")
+        print(f"通过: {eval_results['passed']} 个")
+        print(f"失败: {eval_results['failed']} 个")
+        print(f"总分: {eval_results['score']:.2%}")
         print(f"\n分类统计:")
-        for cat, stats in results['categories'].items():
+        for cat, stats in eval_results['categories'].items():
             print(f"  {cat}: {stats['passed']}/{stats['total']} ({stats['rate']:.0%})")
+        print(f"\n报告已保存: eval_report.md")
 
     elif args.command == 'cognitive':
         from breakshell.cognitive import create_cognitive_agent
