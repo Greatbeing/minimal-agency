@@ -1,4 +1,59 @@
-# BreakShell 依赖
+# BreakShell Financial Agent - 生产环境依赖
+# 核心依赖
 torch>=2.0.0
 numpy>=1.24.0
 requests>=2.31.0
+
+# FastAPI 相关
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+
+# 认证与限流
+slowapi>=0.1.9
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# 监控与指标
+prometheus-client>=0.19.0
+
+# Redis
+redis>=5.0.0
+
+# 数据库
+sqlalchemy>=2.0.0
+alembic>=1.12.0
+
+# 异步 HTTP
+aiohttp>=3.9.0
+httpx>=0.25.0
+
+# 任务队列
+celery>=5.3.0
+flower>=2.0.0
+
+# 配置管理
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# 日志
+loguru>=0.7.0
+
+# 测试
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# 类型检查
+mypy>=1.7.0
+types-requests>=2.31.0
+
+# 代码质量
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.1.0
+
+# 可选：GPU 支持
+# torch>=2.0.0 --index-url https://download.pytorch.org/whl/cu118
