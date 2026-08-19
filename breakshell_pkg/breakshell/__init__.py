@@ -27,19 +27,24 @@ BreakShell — AI Agent 自我模型安全层
 from .agent import BreakShell, NormalAgent
 from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
 from .envs_ext import WebEnv, APIEnv, MultiStepReasoningEnv
+from .financial_enhanced import EnhancedFinancialEnv, BacktestEngine, RiskManager
 from .llm_agent import run_agent, AgentLoop, create_llm, create_default_registry
 from .eval import EvalRunner, PerformanceBenchmark, save_dataset, generate_report
 from .cognitive import CognitiveAgent, create_cognitive_agent, ReflectionEngine, EpisodicMemory, SemanticMemory
 from .knowledge import create_knowledge_store, import_markdown, SearchEngine
+from .value_model import ValueModel, ValueAlignedAgent, ValueAlignment, ValueLearning, create_value_model, create_value_aligned_agent
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 __all__ = [
     "BreakShell", "NormalAgent",
     "CapabilityEnv", "EnergyEnv", "FinancialEnv",
     "WebEnv", "APIEnv", "MultiStepReasoningEnv",
+    "EnhancedFinancialEnv", "BacktestEngine", "RiskManager",
     "run_agent", "AgentLoop", "create_llm", "create_default_registry",
     "EvalRunner", "PerformanceBenchmark", "save_dataset", "generate_report",
     "CognitiveAgent", "create_cognitive_agent", "ReflectionEngine",
     "EpisodicMemory", "SemanticMemory",
     "create_knowledge_store", "import_markdown", "SearchEngine",
+    "ValueModel", "ValueAlignedAgent", "ValueAlignment", "ValueLearning",
+    "create_value_model", "create_value_aligned_agent",
 ]
