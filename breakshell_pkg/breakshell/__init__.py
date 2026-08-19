@@ -22,6 +22,7 @@ BreakShell — AI Agent 自我模型安全层
 
 from .agent import BreakShell, NormalAgent
 from .envs import CapabilityEnv, EnergyEnv, FinancialEnv
+from .llm_agent import run_agent, AgentLoop, create_llm, create_default_registry
 
 __version__ = "0.2.0"
-__all__ = ["BreakShell", "NormalAgent", "CapabilityEnv", "EnergyEnv", "FinancialEnv"]
+__all__ = ["BreakShell", "NormalAgent", "CapabilityEnv", "EnergyEnv", "FinancialEnv", "run_agent", "AgentLoop", "create_llm", "create_default_registry"]

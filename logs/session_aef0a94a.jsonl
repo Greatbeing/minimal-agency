@@ -1,0 +1,3 @@
+{"timestamp": "2026-08-19T09:49:54.707776", "session_id": "aef0a94a", "step": 0, "type": "run_started", "elapsed": 0.01, "goal": "列出当前目录的所有文件"}
+{"timestamp": "2026-08-19T09:49:54.707776", "session_id": "aef0a94a", "step": 0, "type": "plan", "elapsed": 0.01, "plan": {"finish": true, "reason": "This is a mock response. I will use read_file to analyze the project."}}
+{"timestamp": "2026-08-19T09:49:54.707776", "session_id": "aef0a94a", "step": 2, "type": "finished", "elapsed": 0.01, "reason": "This is a mock response. I will use read_file to analyze the project."}
